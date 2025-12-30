@@ -1,4 +1,5 @@
 services:
+  # ---------- REST ----------
   processor-rest:
     build: ./processor_rest
     container_name: processor-rest
@@ -15,6 +16,31 @@ services:
     ports:
       - "8000:8000"
 
+  # ---------- gRPC ----------
+  processor-grpc:
+    build:
+      context: .
+      dockerfile: processor_grpc/Dockerfile
+    container_name: processor-grpc
+    environment:
+      - GRPC_PORT=50051
+      - METRICS_PORT=9102
+    ports:
+      - "9102:9102"     # metrics for Prometheus
+
+  gateway-grpc:
+    build:
+      context: .
+      dockerfile: gateway_grpc/Dockerfile
+    container_name: gateway-grpc
+    environment:
+      - PROCESSOR_GRPC_ADDR=processor-grpc:50051
+    depends_on:
+      - processor-grpc
+    ports:
+      - "8002:8000"     # HTTP gateway for gRPC version
+
+  # ---------- Observability ----------
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -25,3 +51,5 @@ services:
     depends_on:
       - gateway-rest
       - processor-rest
+      - gateway-grpc
+      - processor-grpc

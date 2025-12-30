@@ -9,17 +9,21 @@ app = FastAPI(title="processor-rest")
 REQ = Counter("processor_requests_total", "Total processor requests", ["endpoint", "method", "status"])
 LAT = Histogram("processor_latency_seconds", "Processor latency seconds", ["endpoint", "method"])
 
+
 class ProcessIn(BaseModel):
     value: int
     delay_ms: int = 0
+
 
 @app.get("/health")
 def health():
     return {"status": "ok"}
 
+
 @app.get("/metrics")
 def metrics():
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
 
 @app.post("/process")
 def process(payload: ProcessIn):

@@ -13,17 +13,21 @@ app = FastAPI(title="gateway-rest")
 REQ = Counter("gateway_requests_total", "Total gateway requests", ["endpoint", "method", "status"])
 LAT = Histogram("gateway_latency_seconds", "Gateway latency seconds", ["endpoint", "method"])
 
+
 class ProcessIn(BaseModel):
     value: int
     delay_ms: int = 0
+
 
 @app.get("/health")
 def health():
     return {"status": "ok"}
 
+
 @app.get("/metrics")
 def metrics():
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
 
 @app.post("/process")
 async def process(payload: ProcessIn):

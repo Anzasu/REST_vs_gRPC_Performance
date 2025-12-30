@@ -11,3 +11,12 @@ scrape_configs:
     metrics_path: /metrics
     static_configs:
       - targets: ["processor-rest:8000"]
+
+  - job_name: "gateway-grpc"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["gateway-grpc:8000"]
+
+  - job_name: "processor-grpc"
+    static_configs:
+      - targets: ["processor-grpc:9102"]
